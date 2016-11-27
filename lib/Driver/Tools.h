@@ -615,6 +615,37 @@ namespace visualstudio {
   };
 } // end namespace visualstudio
 
+/// MinGW -- Directly call GNU Binutils assembler and linker
+namespace MinGW {
+class LLVM_LIBRARY_VISIBILITY Assemble : public Tool {
+public:
+  Assemble(const ToolChain &TC) : Tool("MinGW::Assemble", "assembler", TC) {}
+
+  bool hasIntegratedCPP() const override { return false; }
+
+  void ConstructJob(Compilation &C, const JobAction &JA,
+                    const InputInfo &Output, const InputInfoList &Inputs,
+                    const llvm::opt::ArgList &TCArgs,
+                    const char *LinkingOutput) const override;
+};
+
+class LLVM_LIBRARY_VISIBILITY Link : public Tool {
+public:
+  Link(const ToolChain &TC) : Tool("MinGW::Link", "linker", TC) {}
+
+  bool hasIntegratedCPP() const override { return false; }
+  bool isLinkJob() const override { return true; }
+
+  void ConstructJob(Compilation &C, const JobAction &JA,
+                    const InputInfo &Output, const InputInfoList &Inputs,
+                    const llvm::opt::ArgList &TCArgs,
+                    const char *LinkingOutput) const override;
+
+private:
+  void AddLibGCC(const llvm::opt::ArgList &Args, ArgStringList &CmdArgs) const;
+};
+} // end namespace MinGW
+
 namespace arm {
   StringRef getARMFloatABI(const Driver &D, const llvm::opt::ArgList &Args,
                          const llvm::Triple &Triple);
