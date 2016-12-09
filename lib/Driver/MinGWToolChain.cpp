@@ -129,7 +129,8 @@ void MinGW::AddClangCXXStdlibIncludeArgs(const ArgList &DriverArgs,
     return;
 
   llvm::SmallString<1024> IncludeDir;
-  for (bool MingW64 : {true, false}) {
+  for (bool MingW64  = true;;)
+  {
     if (MingW64)
       IncludeDir = Base + Arch;
     else
@@ -139,5 +140,8 @@ void MinGW::AddClangCXXStdlibIncludeArgs(const ArgList &DriverArgs,
     IncludeDir += llvm::sys::path::get_separator();
     addSystemInclude(DriverArgs, CC1Args, IncludeDir.str() + Arch);
     addSystemInclude(DriverArgs, CC1Args, IncludeDir.str() + "backward");
+	if(!MingW64)
+		break;
+	MingW64 = false;
   }
 }
